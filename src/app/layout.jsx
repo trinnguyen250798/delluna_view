@@ -1,6 +1,7 @@
-import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+// ✅ src/app/layout.jsx
+import "./globals.css"; // luôn để ở đây (server-side)
+
+import ClientLayout from "./layout.client";
 
 export const metadata = {
     title: "Delluna Hotel Booking",
@@ -11,9 +12,7 @@ export default function RootLayout({ children }) {
     return (
         <html lang="vi">
         <body>
-        <Header />
-        <main className="min-h-screen px-4 max-w-7xl mx-auto">{children}</main>
-        <Footer />
+        <ClientLayout>{children}</ClientLayout>
         </body>
         </html>
     );
