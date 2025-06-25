@@ -1,18 +1,21 @@
-// ✅ src/app/layout.jsx
-import "./globals.css"; // luôn để ở đây (server-side)
+"use client";
 
-import ClientLayout from "./layout.client";
-
-export const metadata = {
-    title: "Delluna Hotel Booking",
-    description: "Đặt phòng khách sạn toàn cầu",
-};
-
+import { useEffect } from "react";
+import "./globals.css";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import "flowbite";
 export default function RootLayout({ children }) {
+    useEffect(() => {
+        import("preline/preline.js");
+    }, []);
+
     return (
         <html lang="vi">
         <body>
-        <ClientLayout>{children}</ClientLayout>
+        <Header />
+        <main className="min-h-screen px-4 max-w-7xl mx-auto">{children}</main>
+        <Footer />
         </body>
         </html>
     );
