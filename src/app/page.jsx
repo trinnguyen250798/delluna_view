@@ -104,6 +104,26 @@ export default function Page() {
                     </span>
                 </button>
             </div>
+            <div className="bg-white rounded-lg shadow-lg p-4 flex items-center space-x-4 w-full max-w-2xl">
+                <div className="flex-1">
+                    <label htmlFor="destination" className="sr-only">Where do you want to go?</label>
+                    <input type="text" id="destination" placeholder="Where do you want to go?" className="w-full p-2 border-none focus:outline-none">
+                </div>
+                <div className="flex space-x-4">
+                    <div>
+                        <label htmlFor="check-in" className="sr-only">Check In</label>
+                        <input type="date" id="check-in" value="2025-06-27" className="p-2 border-none focus:outline-none">
+                    </div>
+                    <div>
+                        <label htmlFor="check-out" className="sr-only">Check Out</label>
+                        <input type="date" id="check-out" value="2025-06-30" className="p-2 border-none focus:outline-none">
+                    </div>
+                    <div>
+                        <label htmlFor="guests" className="sr-only">Guests</label>
+                        <input type="number" id="guests" value="2" min="1" className="w-16 p-2 border-none focus:outline-none">
+                    </div>
+                </div>
+                <button class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">Let's go! →</button>
         </div>
     );
 }
