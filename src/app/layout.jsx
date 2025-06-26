@@ -1,21 +1,25 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import "flowbite";
+import { useEffect } from 'react';
+import './globals.css';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import 'flowbite';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 export default function RootLayout({ children }) {
     useEffect(() => {
-        import("preline/preline.js");
+        import('preline/preline.js');
     }, []);
 
     return (
         <html lang="vi">
         <body>
-        <Header />
-        <main className="min-h-screen px-4 max-w-7xl mx-auto">{children}</main>
-        <Footer />
+        <GoogleOAuthProvider clientId="499999895092-5dh6jn4o55fi0pa340muaf29l2e42jco.apps.googleusercontent.com">
+            <Header />
+            <main className="min-h-screen px-4 max-w-7xl mx-auto">{children}</main>
+            <Footer />
+        </GoogleOAuthProvider>
         </body>
         </html>
     );
