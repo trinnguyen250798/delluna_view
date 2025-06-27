@@ -10,7 +10,16 @@ import { ToastProvider } from '@/context/ToastContext';
 
 export default function RootLayout({ children }) {
     useEffect(() => {
-        import('preline/preline.js');
+        // Load Preline
+        import('preline/preline');
+
+        // Load và khởi tạo Flowbite Datepicker
+        import('flowbite-datepicker').then((module) => {
+            const Datepicker = module.default;
+            document.querySelectorAll('[datepicker]').forEach((el) => {
+                new Datepicker(el);
+            });
+        });
     }, []);
 
     return (
