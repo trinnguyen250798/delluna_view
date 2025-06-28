@@ -1,12 +1,55 @@
-export default function HotelList({ hotels }) {
+'use client';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { HeartIcon } from '@heroicons/react/24/outline';
+
+export default function HotelCarousel({ hotels }) {
     return (
-        <ul className="space-y-2">
-            {hotels.map((hotel) => (
-                <li key={hotel.id} className="p-4 bg-gray-100 rounded-lg">
-                    <h2 className="text-lg font-semibold">{hotel.name}</h2>
-                    <p>Địa chỉ: {hotel.address}</p>
-                </li>
-            ))}
-        </ul>
+        <div className="relative">
+            <Swiper
+                modules={[Navigation]}
+                spaceBetween={16}
+                slidesPerView={4}
+                navigation
+                className="h-[300px]"
+                breakpoints={{
+                    320: { slidesPerView: 1 },
+                    640: { slidesPerView: 2 },
+                    1024: { slidesPerView: 3 },
+                    1280: { slidesPerView: 4 },
+                }}
+            >
+                {hotels.map((hotel) => (
+                    <SwiperSlide key={hotel.id}>
+                        <div className="bg-white rounded-xl shadow-md overflow-hidden relative transition hover:shadow-lg hover:-translate-y-1 duration-300">
+                            <div className="relative overflow-hidden">
+                                <img
+                                    src={hotel.thumbnail}
+                                    alt={hotel.name}
+                                    className="w-full h-40 object-cover transition-transform duration-300 hover:scale-105"
+                                />
+                                <button className="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:bg-gray-200 transition">
+                                    <HeartIcon className="w-5 h-5 text-gray-600" />
+                                </button>
+                            </div>
+                            <div className="p-3">
+                                <div className="font-bold text-sm truncate">{hotel.name}</div>
+                                <p className="text-xs text-gray-600">{hotel.city}, {hotel.country}</p>
+                                <p className="text-sm text-gray-700 mt-1">1</p>
+                                <div className="flex items-center justify-between mt-2">
+                                    <div className="text-sm text-gray-500">2 đánh giá</div>
+                                    <div className="bg-blue-700 text-white text-xs font-semibold px-2 py-1 rounded">
+                                   1
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+        </div>
     );
 }

@@ -150,50 +150,7 @@ export default function Page() {
                 </div>
 
                 {/* Nút điều hướng */}
-                <button
-                    type="button"
-                    className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                    data-carousel-prev
-                >
-                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
-                        <svg
-                            className="w-4 h-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 6 10"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M5 1 1 5l4 4"
-                            />
-                        </svg>
-                    </span>
-                </button>
-                <button
-                    type="button"
-                    className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                    data-carousel-next
-                >
-                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
-                        <svg
-                            className="w-4 h-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 6 10"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="m1 9 4-4-4-4"
-                            />
-                        </svg>
-                    </span>
-                </button>
+
 
 
             </div>
@@ -207,34 +164,66 @@ export default function Page() {
                     />
                 </div>
                 {/* Check in */}
-                <div className="flex-[1] ml-0 border-r border-gray-400 pr-[10px] pl-[10px] cursor-pointer"
-                    onClick={() => setShowCalendar((prev)=> !prev  )} >
-                    <div className="min-h-[71px] bg-gray-50 p-3 rounded-[2.5rem] border border-transparent hover:border-gray-300 flex items-center gap-3">
-                        <MdDateRange className="text-[20px]" />
-                        <div>
-                            <p className="text-[12px] text-center">Check in</p>
-                            <p className="text-[14px] text-center">
-                                {format(state.startDate, "dd/MM/yyyy")}
-                            </p>
+                <div className="flex">
+                    <div className="flex-[1] ml-0 border-r border-gray-400 pr-[10px] pl-[10px] cursor-pointer"
+                         onClick={() => setShowCalendar((prev)=> !prev  )} >
+                        <div className="min-h-[71px] bg-gray-50 p-3 rounded-[2.5rem] border border-transparent hover:border-gray-300 flex items-center gap-3">
+                            <MdDateRange className="text-[20px]" />
+                            <div>
+                                <p className="text-[12px] text-center">Check in</p>
+                                <p className="text-[14px] text-center">
+                                    {format(state.startDate, "dd/MM/yyyy")}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Check out */}
-                <div
-                    className="flex-[1] ml-0 pr-[10px] pl-[10px] cursor-pointer"
-                    onClick={() => setShowCalendar((prev)=> !prev  )}
-                >
-                    <div className="min-h-[71px] bg-gray-50 p-3 rounded-[2.5rem] border border-transparent hover:border-gray-300 flex items-center gap-3">
-                        <MdDateRange className="text-[20px]" />
-                        <div>
-                            <p className="text-[12px] text-center">Check out</p>
-                            <p className="text-[14px] text-center">
-                                {format(state.endDate, "dd/MM/yyyy")}
-                            </p>
+                    {/* Check out */}
+                    <div
+                        className="flex-[1] ml-0 pr-[10px] pl-[10px] cursor-pointer"
+                        onClick={() => setShowCalendar((prev)=> !prev  )}
+                    >
+                        <div className="min-h-[71px] bg-gray-50 p-3 rounded-[2.5rem] border border-transparent hover:border-gray-300 flex items-center gap-3">
+                            <MdDateRange className="text-[20px]" />
+                            <div>
+                                <p className="text-[12px] text-center">Check out</p>
+                                <p className="text-[14px] text-center">
+                                    {format(state.endDate, "dd/MM/yyyy")}
+                                </p>
+                            </div>
                         </div>
                     </div>
+                    {/* Calendar */}
+
                 </div>
+                <AnimatePresence>
+                    {showCalendar && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="absolute top-[100px] left-[10%] z-40 bg-white border rounded-xl hover:border-gray-300 border-gray-200 shadow-2xl p-4 "
+                        >
+                            <DateRangePicker
+                                ranges={[{
+                                    startDate: state.startDate,
+                                    endDate: state.endDate,
+                                    key: "selection",
+                                }]}
+                                onChange={handleSelect}
+                                months={typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 2}
+                                direction="horizontal"
+                                moveRangeOnFirstSelection={false}
+                                retainEndDateOnFirstSelection={true}
+                                minDate={new Date()}
+                                locale={vi}
+                                staticRanges={[]}
+                                inputRanges={[]}
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Guests */}
                 <div className="relative w-[100px] ml-0 pr-[10px] pl-[10px]" ref={guestWrapperRef}>
@@ -328,37 +317,14 @@ export default function Page() {
                 </button>
             </div>
 
-            {/* Calendar */}
-            <AnimatePresence>
-                {showCalendar && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="flex justify-center mt-4"
-                    >
-                        <DateRangePicker
-                            ranges={[{
-                                startDate: state.startDate,
-                                endDate: state.endDate,
-                                key: "selection",
-                            }]}
-                            onChange={handleSelect}
-                            months={typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 2}
-                            direction="horizontal"
-                            moveRangeOnFirstSelection={false}
-                            retainEndDateOnFirstSelection={true}
-                            minDate={new Date()}
-                            locale={vi}
-                            staticRanges={[]}
-                            inputRanges={[]}
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
-            {loading ? <p>Đang tải...</p> : <HotelList hotels={hotels} />}
+            <div className="">
+                <h2 className="text-[30px] mb-2 font-bold">Điểm đến đang thịnh hành</h2>
+                {loading ? <p>Đang tải...</p> : <HotelList hotels={hotels} />}
+            </div>
+
+
+
         </div>
     );
 }
