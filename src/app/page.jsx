@@ -1,136 +1,364 @@
 "use client";
 
+// api
+import { getHotels } from '@/services/hotelService';
+//
+import HotelList from "@/components/HotelList";
+import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { DateRangePicker } from "react-date-range";
 import "react-date-range/dist/styles.css"; // Main style file
 import "react-date-range/dist/theme/default.css"; // Theme CSS file
 import { Carousel } from "flowbite"; // Import Carousel from Flowbite
-
+import { MdDateRange } from "react-icons/md";
+import { FaUserFriends } from "react-icons/fa";
+import { format, isSameDay } from "date-fns";
+import { vi } from "date-fns/locale";
+import { motion, AnimatePresence } from "framer-motion";
 export default function Page() {
-    const [state, setState] = useState([
-        {
-            startDate: null,
-            endDate: null,
-            key: "selection",
-        },
-    ]);
-
-    // Calculate number of nights
-    const nightsCount = state[0].endDate && state[0].startDate
-        ? Math.round((state[0].endDate.getTime() - state[0].startDate.getTime()) / (1000 * 60 * 60 * 24))
-        : 0;
-
-    // Handle clear action
-    const handleClear = () => {
-        setState([{ startDate: null, endDate: null, key: "selection" }]);
-    };
-
-    // Ref for carousel and datepicker initialization
+    const [state, setState] = useState({
+        startDate: new Date(),
+        endDate: new Date(),
+        key: "selection",
+        number_adults: 2,
+        number_children: 0,
+    });
     const carouselRef = useRef(null);
-
     useEffect(() => {
+        let carouselInstance = null;
+
         if (typeof window !== "undefined" && carouselRef.current) {
-            new Carousel(carouselRef.current, {
+            // Khởi tạo Carousel với các tùy chọn
+            carouselInstance = new Carousel(carouselRef.current, {
                 defaultPosition: 0,
-                interval: 3000, // Auto slide every 3 seconds
+                interval: 3000, // Auto slide mỗi 3 giây
+                pauseOnHover: true, // Tạm dừng khi hover
+                loop: true, // Lặp vô hạn
+            });
+
+            // Optional: Thêm sự kiện (event listeners) nếu cần
+            carouselRef.current.addEventListener("slide", (e) => {
+                console.log("Slide changed:", e.detail);
             });
         }
+
+        // Cleanup để tránh memory leak
+        return () => {
+            if (carouselInstance && typeof carouselInstance.destroy === "function") {
+                carouselInstance.destroy(); // Hủy instance nếu Flowbite hỗ trợ
+            }
+            if (carouselRef.current) {
+                carouselRef.current.removeEventListener("slide", () => {});
+            }
+        };
     }, []);
+    // Handle date selection
+    const [showCalendar, setShowCalendar] = useState(false);
+    const handleSelect = (ranges) => {
+        const { startDate, endDate } = ranges.selection;
+        setState((prev) => ({
+            ...prev,
+            startDate,
+            endDate,
+        }));
+        // Nếu ngày bắt đầu và kết thúc KHÁC NHAU thì đóng lịch (tức là đã chọn xong khoảng ngày)
+        if (!isSameDay(startDate, endDate)) {
+            setTimeout(() => {
+                setShowCalendar(false);
+            }, 200); // đợi 1 chút để tránh bug flicker
+        }
+    };
+    // guide
+    const [showGuestOptions, setShowGuestOptions] = useState(false);
+    const guestWrapperRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (guestWrapperRef.current && !guestWrapperRef.current.contains(event.target)) {
+                setShowGuestOptions(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    // dataa api
+    const fetchedRef = useRef(false);
+    const [hotels, setHotels] = useState([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        if (fetchedRef.current) return;
+        fetchedRef.current = true;
+        const fetchHotels = async () => {
+            try {
+                const data = await getHotels();
+                if(data.codeStatus == 200){
+                    setHotels(data.data);
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách khách sạn:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHotels();
+    }, []);
+    //
 
     return (
         <div className=" mx-auto p-4">
             {/* Carousel */}
-            <div ref={carouselRef}
+            <div
+                ref={carouselRef}
                 id="animation-carousel"
-                className="relative  w-full mx-auto h-96"
-                data-carousel="static" >
+                className="relative w-full mx-auto h-96"
+                data-carousel="slide" // Sử dụng 'slide' để bật auto-slide
+            >
                 <div className="relative h-full overflow-hidden rounded-lg">
-                    <div className="hidden duration-200 ease-linear" data-carousel-item>
-                        <img
+                    <div className="hidden duration-700 ease-in-out" data-carousel-item>
+                        <Image
                             src="/carousel-4.svg"
-                            className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                             alt="Slide 1"
+                            className="object-cover"
+                            fill
+                            priority={true} // Nếu là hình ảnh chính trên trang
                         />
                     </div>
-                    <div className="hidden duration-200 ease-linear" data-carousel-item>
-                        <img
+                    <div className="hidden duration-700 ease-in-out" data-carousel-item>
+                        <Image
                             src="/carousel-4.svg"
-                            className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                            alt="Slide 2"
+                            alt="Slide 1"
+                            fill
+                            className="object-cover"
+                            priority={true} // Nếu là hình ảnh chính trên trang
                         />
                     </div>
                     <div
-                        className="hidden duration-200 ease-linear"
+                        className="hidden duration-700 ease-in-out"
                         data-carousel-item="active"
                     >
-                        <img
+                        <Image
                             src="/carousel-4.svg"
-                            className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                            alt="Slide 3"
+                            alt="Slide 1"
+                            fill
+                            className="object-cover"
+                            priority={true} // Nếu là hình ảnh chính trên trang
                         />
                     </div>
                 </div>
-                <button type="button" className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev >
-                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
-                    <svg
-                        className="w-4 h-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 6 10"
-                    >
-                        <path
-                            d="M5 1 1 5l4 4"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    </svg> </span>
+
+                {/* Nút điều hướng */}
+                <button
+                    type="button"
+                    className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                    data-carousel-prev
+                >
+                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                        <svg
+                            className="w-4 h-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 6 10"
+                        >
+                            <path
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 1 1 5l4 4"
+                            />
+                        </svg>
+                    </span>
                 </button>
                 <button
                     type="button"
                     className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
                     data-carousel-next
                 >
-          <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
-            <svg
-                className="w-4 h-4 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-            >
-              <path
-                  d="m1 9 4-4-4-4"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-              />
-            </svg>
-          </span>
+                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                        <svg
+                            className="w-4 h-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 6 10"
+                        >
+                            <path
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m1 9 4-4-4-4"
+                            />
+                        </svg>
+                    </span>
                 </button>
-            </div>
 
+
+            </div>
             {/* Search Box */}
-            <div className="bg-white relative z-50 rounded-lg border border-gray-200 shadow-2xl p-5 flex items-center space-x-4  max-w-4xl mx-auto mt-[-30px]">
-                <div className="flex-1 border-r border-gray-400 pr-[10px] ">
+            <div className="bg-white relative z-30 rounded-lg border border-gray-200 shadow-2xl p-5 flex items-center max-w-4xl mx-auto mb-5 mt-[-50px]">
+                <div className="flex-[2] pr-[10px]">
                     <input
                         type="text"
-                        id="destination"
                         placeholder="Where do you want to go?"
-                        className="bg-gray-50 border  border-transparent hover:border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        className="bg-gray-50 border min-h-[71px] border-transparent hover:border-gray-300 text-gray-900 text-sm rounded-[2.5rem] focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     />
                 </div>
-                 <div className="flex-[2] border-r border-gray-400 pr-[10px] ">
-                    a
+                {/* Check in */}
+                <div className="flex-[1] ml-0 border-r border-gray-400 pr-[10px] pl-[10px] cursor-pointer"
+                    onClick={() => setShowCalendar((prev)=> !prev  )} >
+                    <div className="min-h-[71px] bg-gray-50 p-3 rounded-[2.5rem] border border-transparent hover:border-gray-300 flex items-center gap-3">
+                        <MdDateRange className="text-[20px]" />
+                        <div>
+                            <p className="text-[12px] text-center">Check in</p>
+                            <p className="text-[14px] text-center">
+                                {format(state.startDate, "dd/MM/yyyy")}
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex-[2] border-r border-gray-400 pr-[10px] ">
-                    n
+
+                {/* Check out */}
+                <div
+                    className="flex-[1] ml-0 pr-[10px] pl-[10px] cursor-pointer"
+                    onClick={() => setShowCalendar((prev)=> !prev  )}
+                >
+                    <div className="min-h-[71px] bg-gray-50 p-3 rounded-[2.5rem] border border-transparent hover:border-gray-300 flex items-center gap-3">
+                        <MdDateRange className="text-[20px]" />
+                        <div>
+                            <p className="text-[12px] text-center">Check out</p>
+                            <p className="text-[14px] text-center">
+                                {format(state.endDate, "dd/MM/yyyy")}
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
+
+                {/* Guests */}
+                <div className="relative w-[100px] ml-0 pr-[10px] pl-[10px]" ref={guestWrapperRef}>
+                    <div
+                        className="min-h-[71px] bg-gray-50 p-3 rounded-[2.5rem] border border-transparent hover:border-gray-300 flex items-center gap-3 cursor-pointer"
+                        onClick={() => setShowGuestOptions((prev) => !prev)}
+                    >
+                        <FaUserFriends className="text-[20px]" />
+                        <p className="text-center">
+                            {state.number_adults + state.number_children}
+                        </p>
+                    </div>
+
+                    {/* Dropdown hiển thị khi click */}
+                    <AnimatePresence>
+                        {showGuestOptions && (
+                            <motion.div
+
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute top-[80px] left-0 z-40 w-64 bg-white shadow-lg rounded-xl p-4 border border-gray-200"
+                            >
+                                <div className="flex justify-between items-center mb-2">
+                                    <span>Người lớn</span>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() =>
+                                                setState((prev) => ({
+                                                    ...prev,
+                                                    number_adults: Math.max(0, prev.number_adults - 1),
+                                                }))
+                                            }
+                                            className="px-2 py-1 bg-gray-200 rounded"
+                                        >
+                                            -
+                                        </button>
+                                        <span>{state.number_adults}</span>
+                                        <button
+                                            onClick={() =>
+                                                setState((prev) => ({
+                                                    ...prev,
+                                                    number_adults: prev.number_adults + 1,
+                                                }))
+                                            }
+                                            className="px-2 py-1 bg-gray-200 rounded"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center">
+                                    <span>Trẻ em</span>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() =>
+                                                setState((prev) => ({
+                                                    ...prev,
+                                                    number_children: Math.max(0, prev.number_children - 1),
+                                                }))
+                                            }
+                                            className="px-2 py-1 bg-gray-200 rounded"
+                                        >
+                                            -
+                                        </button>
+                                        <span>{state.number_children}</span>
+                                        <button
+                                            onClick={() =>
+                                                setState((prev) => ({
+                                                    ...prev,
+                                                    number_children: prev.number_children + 1,
+                                                }))
+                                            }
+                                            className="px-2 py-1 bg-gray-200 rounded"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                </div>
+
+
+                <button className="bg-orange-500 font-bold text-white px-4 py-2 ml-2 rounded-lg hover:bg-orange-600">
                     Let's go! →
                 </button>
             </div>
+
+            {/* Calendar */}
+            <AnimatePresence>
+                {showCalendar && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex justify-center mt-4"
+                    >
+                        <DateRangePicker
+                            ranges={[{
+                                startDate: state.startDate,
+                                endDate: state.endDate,
+                                key: "selection",
+                            }]}
+                            onChange={handleSelect}
+                            months={typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 2}
+                            direction="horizontal"
+                            moveRangeOnFirstSelection={false}
+                            retainEndDateOnFirstSelection={true}
+                            minDate={new Date()}
+                            locale={vi}
+                            staticRanges={[]}
+                            inputRanges={[]}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {loading ? <p>Đang tải...</p> : <HotelList hotels={hotels} />}
         </div>
     );
 }

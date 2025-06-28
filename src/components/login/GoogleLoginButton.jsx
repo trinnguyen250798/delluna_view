@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { GoogleLogin } from '@react-oauth/google';
 import { useToast } from '@/context/ToastContext';
@@ -8,19 +8,19 @@ export default function GoogleLoginButton({ setIsLoggedIn }) {
 
     const handleSuccess = async (credentialResponse) => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BARE_URL_API}api/auth/google/token`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BARE_URL_API}/api/auth/google/token`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: credentialResponse.credential }),
                 credentials: 'include',
             });
             const data = await res.json();
-            if (data.token) {
+            if (res.ok && data.token) {
                 localStorage.setItem('auth_token', data.token);
                 setIsLoggedIn(true);
-                showToast('Đăng nhập thành công');
+                showToast('Đăng nhập thành công', 'success');
             } else {
-                showToast('Đăng nhập thất bại: ' + data.error, 'error');
+                showToast(`Đăng nhập thất bại: ${data.error || 'Lỗi không xác định'}`, 'error');
             }
         } catch (e) {
             showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
