@@ -86,6 +86,7 @@ export default function Page() {
     // dataa api
     const fetchedRef = useRef(false);
     const [hotels, setHotels] = useState([]);
+    const [citys, setCitys] = useState([]);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         if (fetchedRef.current) return;
@@ -95,6 +96,8 @@ export default function Page() {
                 const data = await getHotels();
                 if(data.codeStatus == 200){
                     setHotels(data.data);
+                    citys(data.city);
+                    console.log(citys)
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách khách sạn:", error);
@@ -320,9 +323,19 @@ export default function Page() {
 
             <div className="">
                 <h2 className="text-[30px] mb-2 font-bold">Điểm đến đang thịnh hành</h2>
+                <div className="flex justify-between">
+                    <div>
+                        <Image src="/da-nang.webp" alt="Delluna" width={50} height={50} />
+                    </div>
+                    <div>
+                        <Image src="/hcm.jpg" alt="Delluna" width={50} height={50} />
+                    </div>
+                </div>
+            </div>
+            <div className="">
+                <h2 className="text-[30px] mb-2 font-bold">Lưu trú mà khách yêu thích</h2>
                 {loading ? <p>Đang tải...</p> : <HotelList hotels={hotels} />}
             </div>
-
 
 
         </div>
