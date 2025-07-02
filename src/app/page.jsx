@@ -323,14 +323,76 @@ export default function Page() {
 
             <div className="">
                 <h2 className="text-[30px] mb-2 font-bold">Điểm đến đang thịnh hành</h2>
-                <div className="flex justify-between">
-                    <div>
-                        <Image src="/da-nang.webp" alt="Delluna" width={50} height={50} />
+                <div className="flex justify-between gap-[20px]" >
+                    <div className="w-1/2 relative">
+                        <Link href={`/hotels/1}`} className="block">
+                            <Image
+                                className="object-cover rounded-lg w-full h-[300px]"
+                                src="/da-nang.webp"
+                                alt="Delluna"
+                                width={1080}
+                                height={900}
+                            />
+                            <span className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-md text-lg"> Đà Nẵng </span>
+                        </Link>
                     </div>
-                    <div>
-                        <Image src="/hcm.jpg" alt="Delluna" width={50} height={50} />
+                    <div className="w-1/2 relative">
+                        <Link href={`/hotels/1}`} className="block">
+                            <Image
+                                className="object-cover rounded-lg w-full h-[300px]"
+                                src="/hcm.jpg"
+                                alt="Delluna"
+                                width={1080}
+                                height={900}
+                            />
+                            <span className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-md text-lg"> Hồ Chí Minh </span>
+                        </Link>
+                        
                     </div>
                 </div>
+                <div className="flex justify-between gap-[20px] mt-[20px]" >
+                    <div className="w-1/3 relative">
+                        <Link href={`/hotels/1}`} className="block">
+                            <Image
+                                className="object-cover rounded-lg w-full h-[200px]"
+                                src="/da-nang.webp"
+                                alt="Delluna"
+                                width={1080}
+                                height={900}
+                            />
+                            <span className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-md text-lg"> Đà Nẵng </span>
+                        </Link>
+
+                      
+                    </div>
+                    <div className="w-1/3 relative">
+                        <Link href={`/hotels/1}`} className="block">
+                            <Image
+                                className="object-cover rounded-lg w-full h-[200px]"
+                                src="/hcm.jpg"
+                                alt="Delluna"
+                                width={1600}
+                                height={900}
+                            />
+                            <span className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-md text-lg"> Hồ Chí Minh </span>
+                        </Link>
+                     
+                    </div>
+                    <div className="w-1/3 relative">
+
+                        <Link href={`/hotels/1}`} className="block">
+                            <Image
+                                className="object-cover rounded-lg w-full h-[200px]"
+                                src="/hcm.jpg"
+                                alt="Delluna"
+                                width={1600}
+                                height={900}
+                            />
+                            <span className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded-md text-lg"> Hồ Chí Minh </span>
+                        </Link>
+                    </div>
+                </div>
+
             </div>
             <div className="">
                 <h2 className="text-[30px] mb-2 font-bold">Lưu trú mà khách yêu thích</h2>
