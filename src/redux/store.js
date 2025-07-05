@@ -1,8 +1,12 @@
+// src/redux/store.js
 import { configureStore } from '@reduxjs/toolkit';
-import homeReducer from './slices/homeSlice';
+import hotelReducer from './features/hotel/hotelSlice';
+import cityReducer from './features/city/citySlice';
 
 export const store = configureStore({
     reducer: {
-        home: homeReducer,
+        hotel: hotelReducer,
+        city: cityReducer,
+
     },
 });
