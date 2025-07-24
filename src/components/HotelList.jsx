@@ -35,7 +35,7 @@ export default function HotelCarousel({ hotels }) {
             >
                 {hotels.map((hotel) => (
                     <SwiperSlide key={hotel.id}>
-                        <Link href={`/hotels/${hotel.id}`} className="block">
+                        <Link href={`/hotel/${hotel.id}`} className="block">
                             <div className="bg-white rounded-xl shadow-md overflow-hidden relative transition hover:shadow-lg hover:-translate-y-1 duration-300">
                                 <div className="relative overflow-hidden">
                                     <img

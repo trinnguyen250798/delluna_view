@@ -8,3 +8,12 @@ export const getHotels = async () => {
         return [];
     }
 };
+export const getHotelDetail = async (id) => {
+    try {
+        const res = await axios.get(`/api/hotels/${id}`);
+        return res.data;
+    } catch (error) {
+        console.error('Lỗi khi fetch hotel:', error);
+        return [];
+    }
+};
