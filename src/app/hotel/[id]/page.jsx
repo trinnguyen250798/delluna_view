@@ -13,7 +13,11 @@ export default function HotelDetailPage()
         let isMounted = true;
         if (id) {
             getHotelDetail(id).then((data) => {
-                if (isMounted) setHotel(data);
+
+                if (isMounted) {
+                    setHotel(data.data);
+
+                }
             });
         }
         return () => { isMounted = false; };
@@ -48,6 +52,22 @@ export default function HotelDetailPage()
                     </div>
                 </div>
             </div>
+            {Array.isArray(hotel?.rooms) && hotel.rooms.map((room) => (
+                <div key={room.id} className="bg-white rounded-lg shadow-md p-4">
+                    <h2 className="text-lg font-semibold">
+                        {room.room_type?.name || `Phòng ${room.room_number}`}
+                    </h2>
+                    <p className="text-gray-600">{room.description}</p>
+                    <p className="text-orange-500 font-bold mt-2">
+                        {new Intl.NumberFormat('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND',
+                        }).format(room.price_per_night)} / đêm
+                    </p>
+                </div>
+            ))}
+
+
         </div>
 
     );
