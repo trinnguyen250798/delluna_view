@@ -5,6 +5,7 @@ import { getHotelDetail } from '@/services/hotelService';
 import "react-date-range/dist/styles.css"; // Main style file
 import "react-date-range/dist/theme/default.css"; // Theme CSS file
 import BoxSearch from "@/components/BoxSearch";
+import { FaUser  } from "react-icons/fa";
 export default function HotelDetailPage()
 {
     const { id } = useParams();
@@ -52,22 +53,36 @@ export default function HotelDetailPage()
                     </div>
                 </div>
             </div>
-            {Array.isArray(hotel?.rooms) && hotel.rooms.map((room) => (
-                <div key={room.id} className="bg-white rounded-lg shadow-md p-4">
-                    <h2 className="text-lg font-semibold">
-                        {room.room_type?.name || `Phòng ${room.room_number}`}
-                    </h2>
-                    <p className="text-gray-600">{room.description}</p>
-                    <p className="text-orange-500 font-bold mt-2">
-                        {new Intl.NumberFormat('vi-VN', {
-                            style: 'currency',
-                            currency: 'VND',
-                        }).format(room.price_per_night)} / đêm
-                    </p>
-                </div>
-            ))}
+            <div className="overflow-x-auto">
+                <table className="min-w-full table-auto border border-gray-300 text-sm text-left">
+                    <thead className="bg-gray-100">
+                    <tr>
+                        <th className="px-4 py-2 border-b">Loại chỗ nghỉ</th>
+                        <th className="px-4 py-2 border-b">Số lượng khách</th>
+                        <th className="px-4 py-2 border-b"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {Array.isArray(hotel?.rooms) && hotel.rooms.map((room) => (
+                        <tr key={room.id}  className="hover:bg-gray-50">
+                            <td className="px-4 py-2 border-b">{room.room_type?.name }</td>
+                            <td className="px-4 py-2 border-b">
+                                {Array.from({ length: room.max_guests }).map((_, i) => (
+                                    <FaUser key={i} className="inline-block text-gray-600 mr-1" />
+                                ))}
+                            </td>
+                            <td className="px-4 py-2 border-b">
+                                {new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND',
+                                }).format(room.price_per_night)} / đêm
+                            </td>
+                        </tr>
+                    ))}
 
-
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     );
