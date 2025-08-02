@@ -65,13 +65,16 @@ export default function HotelDetailPage()
                     <tbody>
                     {Array.isArray(hotel?.rooms) && hotel.rooms.map((room) => (
                         <tr key={room.id}  className="hover:bg-gray-50">
-                            <td className="px-4 py-2 border-b">{room.room_type?.name }</td>
                             <td className="px-4 py-2 border-b">
+                                <p> {room.room_type?.name }</p>
+                                <p> {room.room_type?.description }</p>
+                            </td>
+                            <td className="px-4 py-2 border-b truncate">
                                 {Array.from({ length: room.max_guests }).map((_, i) => (
                                     <FaUser key={i} className="inline-block text-gray-600 mr-1" />
                                 ))}
                             </td>
-                            <td className="px-4 py-2 border-b">
+                            <td className="px-4 py-2 border-b truncate">
                                 {new Intl.NumberFormat('vi-VN', {
                                     style: 'currency',
                                     currency: 'VND',
